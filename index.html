@@ -1,0 +1,428 @@
+<html>
+    <head>
+        <title>Cultivation Idle</title>
+
+        <link rel="stylesheet" href="interface.css">
+    </head>
+    <body>
+        <div>
+            <div id="menu">
+                <div style='color:white;display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+                    Changelog
+                    <div style='max-width: 71px;' class='showthisH' id='changelog'>
+                        <div class='showthat2'>
+                            Version 0.01
+                            <div class='showthis2'>
+                                <b> November 16th, 2022</b>
+                                • Developed the absolute basics of the tick system.<br>
+                                • Added 3 actions, 2 achievements, 1 resource, and 2 story chapters.
+                            </div>
+                        </div>
+                        <div class='showthat2'>
+                            Version 0.02
+                            <div class='showthis2'>
+                                <b> November 17th, 2022</b>
+                                • Attempted and abandoned a remake using XML and jQuery.<br>
+                                • Got code for implementing FAQ, Options, Save menu, and the Changelog.
+                            </div>
+                        </div>
+                        <div class='showthat2'>
+                            Version 0.03
+                            <div class='showthis2'>
+                                <b> November 20th, 2022</b>
+                                • Successfully continued from v0.01, condensed code using more efficient methods and loops.<br>
+                                • Removed bootstrap and made element positions and sizes absolute for ease of development.<br>
+                                • Implemented the change log, save menu, options, and FAQ which were developed in previous abandoned version.<br>
+                                • Added an energy system and a health system. So far you will not die when yo hit 0 hp. <br>
+                                Health regenerates so long as you have enough coin (0.25) each second and will consume that coin to recover health.<br>
+                                If you hit 0 energy with 0 coin, you will lose 1 health per second instead.<br>
+                                • Made all html element positions absolute, they no longer scale with screen size.<br>
+                                • Implemented the start of the attributes system. Actions increase your attributes, and attributes increase the rewards from actions.
+                            </div>
+                        </div>
+                        <div class='showthat2'>
+                            Version 0.04
+                            <div class='showthis2'>
+                                <b> November 22nd, 2022 - The current date</b>
+                                • Developed the saving system.<br>
+                                • Developed the shop and inventory system to give gold a purpose. 
+                                Shop contains 4 upgrades and 2 items, upgrades provide a bonus immediately, items go into inventory to be used in the equipment system at a later date. <br>
+                                • Tweaked several of the timings such that they triggered on 100ms intervals, not 1 second intervals to make the process mechanically and aesthetically smoother, especially for energy/health where values contain decimals.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style='color:white;display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+                    Saving
+                    <div class='showthisH'>
+                        <button class='button' onClick="save()">Save Manually</button>
+                        <br>
+                        <input id='exportImport'><label for='exportImport'> Export/Import Savefile</label><br>
+                        <button>Export</button>
+                        <button>Import</button><br>
+                        Click Export to export to your clipboard (ctrl-v somewhere else).<br>Paste a save and click Import to import.<br>
+                        WARNING: Import will break the game if invalid save. Empty import will hard clear the game.
+                        <br>
+                    </div>
+                </div>
+                <div style='color:white;display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+                    FAQ
+                    <div class='showthisH' style="min-width: 400px;">
+                        <b>Q:   </b>What should my first goal be?<br>
+                        <b>A:   </b>The story provides some clear cut goals that you can focus on, the first is to earn 10 coins.<br>
+                            If a story goal is taking a while, you can set some intermediate goals by aiming to complete achievements.<br> 
+                            Story goals and achievements both often unlock new actions or features.<br><br>
+                        <b>Q:   </b>Why do my coins decrease / why do I not get coins from certain actions?<br>
+                        <b>A:   </b>Your character must each on a consistent basis. It costs him 1 coin every 4 seconds to fend off starvation. <br>
+                            This coin is occasionally subtracted from your purse at the same time as you get paid, which is why you see a missing payment.
+                    </div>
+                </div>
+                <div style='color:white;display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+                    Options
+                    <div class='showthisH'>
+                        Theme: <select id='themeInput'>
+                            <option value='${themeList[index]}'>Normal</option>
+                        </select><br>
+                        <input id='hotkeysInput' type='checkbox'/>
+                        <label class='showthat' for='hotkeysInput'>Hotkeys
+                            <div class='showthis'>No Hotkeys as of yet!</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="gamePanel">
+                <div id="gameTabs">
+                    <button id="playerHeaderButton" onClick="toggleTab('playerContent', 'playerHeaderButton')" style="width:185px">Player</button><br>
+                    <button class="active" id="actionHeaderButton" onClick="toggleTab('actionsContent', 'actionHeaderButton')" style="width:185px">Actions</button><br>
+                    <button class="blink" id="storyHeaderButton" onClick="toggleTab('storyContent', 'storyHeaderButton')" style="width:185px">Story</button><br>
+                    <button class="blink" id="achievementHeaderButton" onClick="toggleTab('achievementsContent', 'achievementHeaderButton')" style="width:185px">Achievements</button><br>
+                    <button class="blink" id="townHeaderButton" onClick="toggleTab('townContent', 'townHeaderButton')" style = "display:none;width:185px">Town</button>
+                </div>
+                <div id="gameWindow">
+                    <div id ="playerContent" style="display:none">
+                        <div id="playerDetails"> <!--basic details top left -->
+                            Name: Test Wizard <br>
+                            Level: 1 <br>
+                            Experience: 1/50
+                        </div>
+                        <div id="playerAttributes"> <!--attributes middle left -->
+                            Strength: 1 <br>
+                            Dexterity: 1 <br>
+                            Constitution: 1 <br>
+                            Intelligence: 1 <br>
+                            Charisma: 1 <br>
+                            Soul: 1
+                        </div>
+                        <div id="playerSkills"> <!--skills top middle -->
+                            skills
+                        </div>
+                        <div id="playerEquipment"> <!--equipment top right -->
+                            Head: <br>
+                            Body: <br>
+                            Legs: <br>
+                            Right Hand: <br>
+                            Left Hand: <br>
+                            Accessory 1: <br>
+                            Accessory 2: 
+                        </div>
+                        <div id="playerStatistics"> <!--statistics middle right -->
+                            statistics
+                        </div>
+                        <div id="playerInventory"> <!--inventory bottom left -->
+                            You have no inventory slots. Buy a bag!
+                        </div>
+                    </div>
+                    <div id="actionsContent" style="display:block">
+                        <div id="tasksHeader" style="color:white;background-color:#4F4F4F">
+                            Tasks
+                        </div>
+                        <div id="tasksBody">
+                            <div class="tooltip-wrap">
+                                <button class="active" id="restButton" onClick="startAction('resting', 2)">Rest</button>
+                                <div class="tooltip-content" style="color: white;z-index: 1">
+                                    <b>Rest</b><br>
+                                    Recover your energy, but make sure you can still afford to eat!<hr color="white"/>Duration: 1 sec<br>Reward: 1 energy
+                                </div> 
+                            </div>
+                            <div class="tooltip-wrap">
+                                <button id="begButton" onClick="startAction('begging', 40)">Beg</button>
+                                <div id="begTooltip" class="tooltip-content" style="color: white;z-index: 1">
+                                    <b>Beg</b><br>
+                                    Beg for coins from strangers<hr color="white"/>Duration: 2 sec<br>Energy Cost: 1/sec<br>Reward: 1 coin, 0.01 charisma.
+                                </div> 
+                            </div>
+                            <div class="tooltip-wrap">
+                                <button id="performButton" style="display:none" onClick="startAction('performing', 200)">Perform</button>
+                                <div id="performTooltip" class="tooltip-content" style="color: white;z-index: 1">
+                                    <b>Perform</b><br>
+                                    Sing and dance to earn your coin<hr color="white"/>Duration: 10 sec<br>Energy Cost: 1/sec<br>Reward: 6 coin, 0.1 charisma.
+                                </div> 
+                            </div>
+                            <div class="tooltip-wrap">
+                                <button id="exploreButton" style="display:none" onClick="startAction('exploring', 100)">Explore</button>
+                                <div id="exploreTooltip" class="tooltip-content" style="color: white;z-index: 1">
+                                    <b>Explore</b><br>
+                                    Take a look around town and see what there is to do<hr color="white"/>Duration: 5 sec<br>Energy Cost: 1/sec<br>Reward: 0.02 constitution.
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <div id ="storyContent" style="display:none">
+                        <div class="storyHeader" id="storyHeader1" style="background-color:#4F4F4F">
+                            1st of January in the year 600
+                        </div>
+                        <div class="storyBody" id="storyBody1" style="padding:5px">
+                                You are a young man, down on his luck after his family home was raided by bandits. You have travelled from town to town, heading North as you go and finally you have reached the town of Bei Zhen. 
+                                Several of the towns prior, you had only barely managed to scrape together enough money to buy some bread and water, enough to keep you moving. But this town, it seems, is different. 
+                                Within minutes of sitting down on a busy street corner, an eccentric and well dressed man strikes up a conversation with you. He seems to empathise with your tale, and places a single gold coin in your cup before leaving. 
+                                This coin is not the imperial standard, and you doubt that it would get past the eagled-eyed shopkeepers if you tried to buy something with it, but it is a beautiful looking coin nonetheless.
+                                It is engraved with markings that depict the sun circling the earth, truly a work of art, and with it being a gift from a sympathetic stranger you feel averse to parting with it.
+                                You give the coin a quick flip for good luck before pocketing it. For now though, it's time to try and earn some money.
+                            <br> <b>Reach 10 coins.</b>
+                        </div>
+                        <div class="storyHeader" id="storyHeader2" style="background-color:#4F4F4F;display:none">
+                            1st of January in the year 600
+                        </div>
+                        <div class="storyBody" id="storyBody2" style="padding:5px;display:none">
+                                Having finally scrounged up enough spare money for a few days worth of bread and water, you decide it's time to explore the town. 
+                                Several of those who left you some coin were wearing a sect uniform, one of three kinds, and they each looked like they knew this town well.
+                                Thoughts of revenge flood your mind at the thought of these martial schools. With the power that they wield, a group of bandits would be nothing and you could take back your family home.
+                            <br> <b>Find a local sect and apply.</b>
+                        </div>
+                    </div>
+                    <div id ="achievementsContent" style="display:none">
+                        <div id="unlockedAchievementsHeader" style="background-color:#4F4F4F;">
+                            Unlocked Achievements
+                        </div>
+                        <div id="unlockedAchievementsBody">
+                            <div class="tooltip-wrap">
+                                <img id="unlockedAchieve1" src="Images/beg100.png" style="width:64px;height:64px;margin:5px;display:none">
+                                <div class="tooltip-content" style="color: white;z-index: 1">
+                                    Complete the Beg action 100 times.<br><b>Reward: Unlock the Perform action.</b>                                    
+                                </div> 
+                            </div>
+                            <div class="tooltip-wrap">
+                                <img id="unlockedAchieve2" src="Images/coins10.png" style="width:64px;height:64px;margin:5px;display:none">
+                                <div class="tooltip-content" style="color: white;z-index: 1">
+                                    Collect your first 10 coins.<br><b>Reward: Unlock the Explore action.</b>                                    
+                                </div> 
+                            </div>
+                        </div>
+                        <div id="lockedAchievementsHeader" style="background-color:#4F4F4F;">
+                            Locked Achievements
+                        </div>
+                        <div id="lockedAchievementsBody">
+                            <div class="tooltip-wrap">
+                                <img id="lockedAchieve1" src="Images/beg100.png" style="width:64px;height:64px;margin:5px;">
+                                <div class="tooltip-content" style="color: white;z-index: 1">
+                                    Complete the Beg action 100 times.                                    
+                                </div> 
+                            </div>
+                            <div class="tooltip-wrap">
+                                <img id="lockedAchieve2" src="Images/coins10.png" style="width:64px;height:64px;margin:5px;">
+                                <div class="tooltip-content" style="color: white;z-index: 1;">
+                                    Collect your first 10 coins.                                    
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <div id="townContent" style="display:none">
+                        <div id="townName">
+                            Bei Zhen
+                        </div>
+                        <div id="town1ExplorationPercent" style="background-color:#4F4F4F">
+                            <b>Explored: 0%</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked1">
+                            <b>Explore 5% of the town.</b>
+                        </div>
+                        <div class="townBodyUnlocked" id="townBodyUnlocked1" style="display:none">
+                            General Store:<br>
+                            A shop that sells items to the common folk. He is looking for an assistant to help him sell his wares, but he won't hire anyone wearing rags.<br>
+                            <button onClick="toggleTown1Shop()">
+                                Buy
+                            </button>
+                            <button>
+                                Sell
+                            </button>
+                            <button>
+                                Apply
+                            </button>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked2">
+                            <b>Explore 10% of the town.</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked3">
+                            <b>Explore 20% of the town.</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked4">
+                            <b>Explore 30% of the town.</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked5">
+                            <b>Explore 40% of the town.</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked6">
+                            <b>Explore 50% of the town.</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked7">
+                            <b>Explore 75% of the town.</b>
+                        </div>
+                        <div class="townBodyLocked" id="townBodyLocked8">
+                            <b>Explore 100% of the town.</b>
+                        </div>
+                    </div>
+                </div>
+                <div id="managementColumn">
+                    <div id="date" style="float:right">
+                        The 1st of January in the year 600.
+                    </div>
+                    <div id="currentAction" style="float:right">
+                        You are currently resting.
+                    </div>
+                    <div id="health">
+                        Health: 10/10
+                    </div>
+                    <div id="energy">
+                        Energy: 10/10
+                    </div>
+                    <div id="coins">
+                        Coins: 0/10
+                    </div>
+                </div>
+            </div>
+            <div id="town1Shop" style="display:none;z-index: 1;position:absolute;top:8vw;left:8vw;">
+                <div style="font-size: 30px;text-align: center;">
+                    <b>Bei Zhen General Store</b>
+                </div>
+                <div>
+                    <table style="border-bottom: 1px solid white;">
+                        <tr>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;font-size:24px;text-align: center;">Upgrades</th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                        </tr>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity remaining</th>
+                            <th>Item Description</th>
+                            <th>Item Price</th>
+                            <th>Buy Button</th>
+                        </tr>
+                        <tr id="shop1Pouch">
+                            <td style="text-align: center">Pouch</td>
+                            <td id="shop1PouchStock" style="text-align: center">2</td>
+                            <td style="text-align: center">Increase your coin maximum by 15.</td>
+                            <td style="text-align: center">10 coins.</td>
+                            <td style="text-align: center"><button id="buyPouchButton" onClick="buyPouch()">Purchase</button></td>
+                        </tr>
+                        <tr id="shop1Purse">
+                            <td style="text-align: center">Purse</td>
+                            <td id="shop1PurseStock" style="text-align: center">2</td>
+                            <td style="text-align: center">Increase your coin maximum by 30.</td>
+                            <td style="text-align: center">25 coins.</td>
+                            <td style="text-align: center"><button id="buyPurseButton" onClick="buyPurse()">Purchase</button></td>
+                          </tr>
+                        <tr id="shop1SmallBag">
+                            <td style="text-align: center">Small Bag</td>
+                            <td id="shop1SmallBagStock" style="text-align: center">1</td>
+                            <td style="text-align: center">Increase your maximum inventory space by 5.</td>
+                            <td style="text-align: center">10 coins.</td>
+                            <td style="text-align: center"><button id="buySmallBagButton" onClick="buySmallBag()">Purchase</button></td>
+                        </tr>
+                        <tr id="shop1MediumBag">
+                            <td style="text-align: center">Medium Bag</td>
+                            <td id="shop1MediumBagStock" style="text-align: center">1</td>
+                            <td style="text-align: center">Increase your maximum inventory space by 5.</td>
+                            <td style="text-align: center">100 coins.</td>
+                            <td style="text-align: center"><button id="buyMediumBagButton" onClick="buyMediumBag()">Purchase</button></td>
+                        </tr>
+                        <tr id="shop1SleepingBag">
+                            <td style="text-align: center">Sleeping Bag</td>
+                            <td id="shop1SleepingBagStock" style="text-align: center">1</td>
+                            <td style="text-align: center">Increase your resting energy rate by 0.05.</td>
+                            <td style="text-align: center">50 coins.</td>
+                            <td style="text-align: center"><button id="buySleepingBagButton" onClick="buySleepingBag()">Purchase</button></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid white;">
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;font-size:24px; text-align: center;">Items</th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                            <th style="border-bottom: 1px solid white;border-top: 1px solid white;"></th>
+                        </tr>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity remaining</th>
+                            <th>Item Description</th>
+                            <th>Item Price</th>
+                            <th>Buy Button</th>
+                        </tr>
+                        <tr id="shop1WalkingStick">
+                            <td style="text-align: center">Walking Stick</td>
+                            <td id="shop1WalkingStickStock" style="text-align: center">1</td>
+                            <td style="text-align: center">Increase your explore rate by 10% while equipped.</td>
+                            <td style="text-align: center">30 coins.</td>
+                            <td style="text-align: center"><button id="buyWalkingStickButton" onClick="buyWalkingStick()">Purchase</button></td>
+                        </tr>
+                        <tr id="shop1WoodenSandals">
+                            <td style="text-align: center">Wooden Sandals</td>
+                            <td id="shop1WoodenSandalStock" style="text-align: center">1</td>
+                            <td style="text-align: center">Increase your explore rate by 10% while equipped.</td>
+                            <td style="text-align: center">30 coins.</td>
+                            <td style="text-align: center"><button id="buyWoodenSandals" onClick="buyWoodenSandals()">Purchase</button></td>
+                        </tr>
+                        <tr id="shop1TravellersClothes">
+                            <td style="text-align: center">Travellers Clothes</td>
+                            <td id="shop1TravellersClothesStock" style="text-align: center">1</td>
+                            <td style="text-align: center">You will no longer look like a beggar. Allows you to travel.</td>
+                            <td style="text-align: center">50 coins.</td>
+                            <td style="text-align: center"><button id="buyTravellersClothes" onClick="buyTravellersClothes()">Purchase</button></td>
+                        </tr>
+                      </table>
+                </div>
+                <div style="text-align: center;">
+                    <button onClick="toggleTown1Shop()">Close</button>
+                </div>
+            </div>
+            <div id="itemSlotMenu" style="display:none;z-index: 1;position:relative;">
+                
+            </div>
+        </div>
+
+        <script type = "text/javascript" src="driver.js"></script>
+        <script type = "text/javascript" src="interval.js"></script>
+        <script type = "text/javascript" src="items.js"></script>
+        <script type = "text/javascript" src="actions.js"></script>
+        <script type = "text/javascript" src="shop.js"></script>
+        <script type = "text/javascript" src="equipment.js"></script>
+        <script type = "text/javascript" src="inventory.js"></script>
+        <script type = "text/javascript" src="saving.js"></script>
+        <script> 
+            startGame();
+            function toggleTab(content, button) {
+                document.getElementById("playerContent").style.display = "none";
+                document.getElementById("actionsContent").style.display = "none";
+                document.getElementById("storyContent").style.display = "none";
+                document.getElementById("achievementsContent").style.display = "none";
+                document.getElementById("townContent").style.display = "none";
+                document.getElementById("playerHeaderButton").classList.remove("active");
+                document.getElementById("actionHeaderButton").classList.remove("active");
+                document.getElementById("storyHeaderButton").classList.remove("active");
+                document.getElementById("achievementHeaderButton").classList.remove("active");
+                document.getElementById("townHeaderButton").classList.remove("active");
+                document.getElementById(content).style.display = "block";
+                document.getElementById(button).classList.add("active");
+                document.getElementById(button).classList.remove("blink");
+            }
+            function toggleTown1Shop() {
+                if (document.getElementById("town1Shop").style.display == "block") {
+                    document.getElementById("town1Shop").style.display = "none";
+                } else if (document.getElementById("town1Shop").style.display == "none") {
+                    document.getElementById("town1Shop").style.display = "block";
+                }
+            }
+        </script>      
+    </body>
+</html>
